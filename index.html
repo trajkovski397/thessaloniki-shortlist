@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thessaloniki — Shopping List</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --bg: #0b0b0c;
+    --bg-elev: #141415;
+    --line: rgba(255,255,255,0.08);
+    --gold: #c9a05a;
+    --gold-soft: rgba(201,160,90,0.35);
+    --text: #f2ede6;
+    --text-dim: #9a9690;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Montserrat', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at top, rgba(201,160,90,0.06), transparent 60%),
+      radial-gradient(ellipse at bottom, rgba(201,160,90,0.04), transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  header {
+    position: relative;
+    text-align: center;
+    padding: 90px 24px 50px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  header .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 500;
+  }
+
+  header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    font-size: clamp(2.6rem, 6vw, 4.2rem);
+    margin: 14px 0 10px;
+    letter-spacing: 0.01em;
+  }
+
+  header .sub {
+    color: var(--text-dim);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    font-weight: 300;
+  }
+
+  nav.pillbar {
+    position: sticky; top: 0; z-index: 10;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 16px 24px;
+    background: rgba(11,11,12,0.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  nav.pillbar a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  nav.pillbar a:hover {
+    color: var(--gold);
+    border-color: var(--gold-soft);
+  }
+
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 50px 24px 100px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .category {
+    margin-bottom: 70px;
+    scroll-margin-top: 70px;
+  }
+
+  .category-head {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 14px;
+  }
+
+  .category-head h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    font-size: 2rem;
+    margin: 0;
+    letter-spacing: 0.02em;
+  }
+
+  .category-head .count {
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    font-weight: 500;
+    margin-left: auto;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 22px;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: var(--gold-soft);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+  }
+
+  .card-img {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    background: #1b1b1c;
+    overflow: hidden;
+  }
+
+  .card-img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+
+  .card:hover .card-img img {
+    transform: scale(1.05);
+  }
+
+  .img-fail .card-img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .img-fail .card-img img { display: none; }
+  .img-fail .card-img::after {
+    content: "Image unavailable";
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+  }
+
+  .view-tag {
+    position: absolute;
+    bottom: 10px; left: 10px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text);
+    background: rgba(11,11,12,0.72);
+    border: 1px solid var(--gold-soft);
+    padding: 5px 10px;
+    border-radius: 999px;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: all 0.25s ease;
+  }
+
+  .card:hover .view-tag {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .card-meta {
+    padding: 14px 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .card-meta .brand {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  .card-meta .name {
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: var(--text);
+    font-weight: 400;
+  }
+
+  .card-meta .price {
+    font-size: 12px;
+    color: var(--gold);
+    font-weight: 500;
+    margin-top: 2px;
+    letter-spacing: 0.01em;
+  }
+
+  .unavailable-section .note {
+    color: var(--text-dim);
+    font-size: 12px;
+    margin: -14px 0 18px;
+  }
+
+  .unavailable-list {
+    list-style: none;
+    padding: 0; margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .unavailable-list li a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 12.5px;
+    border-bottom: 1px dotted var(--line);
+    padding-bottom: 8px;
+    display: block;
+  }
+
+  .unavailable-list li a:hover { color: var(--text); }
+  .unavailable-list .brand {
+    color: var(--gold);
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    font-size: 10.5px;
+    text-transform: uppercase;
+  }
+
+  footer {
+    text-align: center;
+    padding: 40px 24px 60px;
+    color: var(--text-dim);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-top: 1px solid var(--line);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">The Shortlist</div>
+  <h1>Thessaloniki</h1>
+  <div class="sub">62 saved pieces, across 3 categories — tap through to buy</div>
+</header>
+
+<nav class="pillbar">
+  <a href="#fragrances">Fragrances</a>
+<a href="#sunglasses">Eyewear</a>
+<a href="#zara">Zara</a>
+</nav>
+
+<main>
+  
+    <section class="category" id="fragrances">
+      <div class="category-head">
+        <h2>Fragrances</h2>
+        <span class="count">30</span>
+      </div>
+      <div class="grid">
+        
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/unisex/eau-de-parfum/byredo-black-saffron-eau-de-parfum-00003307327/?SizeValue=50ml" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/3/jpg/files/products/7340032875386/1.jpg" alt="BYREDO Black Saffron Eau de Parfum" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">BYREDO</span>
+          <span class="name">Black Saffron Eau de Parfum</span>
+          <span class="price">50ml €171.60 · 100ml €249.60 — fragrance.mk: 50ml ~€188.29 (11,580 MKD) · 100ml ~€246.34 (15,150 MKD)</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/unisex/eau-de-parfum/montblanc-fragrances-montblanc-collection-coffret-patchouli-ink-eau-de-parfum-set-00002860096/" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/2/jpg/files/products/3386460151726/1.jpg" alt="MONTBLANC Collection Coffret Patchouli Ink EDP Set" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">MONTBLANC</span>
+          <span class="name">Collection Coffret Patchouli Ink EDP Set</span>
+          <span class="price">€170.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/unisex/eau-de-parfum/montblanc-fragrances-patchouli-ink-eau-de-parfum-00002692294/?SizeValue=125ml" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/2/jpg/files/products/3386460143288/1.jpg" alt="MONTBLANC Patchouli Ink Eau de Parfum 125ml" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">MONTBLANC</span>
+          <span class="name">Patchouli Ink Eau de Parfum 125ml</span>
+          <span class="price">125ml €176.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/niche/unisex-aromata/matiere-premiere-crystal-saffron-eau-de-parfum-00003136308/?SizeValue=50ml" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/3/jpg/files/products/3770007317858/1.jpg" alt="MATIÈRE PREMIÈRE Crystal Saffron Eau de Parfum" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">MATIÈRE PREMIÈRE</span>
+          <span class="name">Crystal Saffron Eau de Parfum</span>
+          <span class="price">50ml €170.00 · 100ml €250.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/niche/unisex-aromata/matiere-premiere-falcon-leather-eau-de-parfum-00003136301/?SizeValue=50ml" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/3/jpg/files/products/3760372460075/1.jpg" alt="MATIÈRE PREMIÈRE Falcon Leather Eau de Parfum" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">MATIÈRE PREMIÈRE</span>
+          <span class="name">Falcon Leather Eau de Parfum</span>
+          <span class="price">50ml €170.00 · 100ml €250.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/niche/unisex-aromata/matiere-premiere-encens-suave-eau-de-parfum-00003136300/?SizeValue=50ml" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/3/jpg/files/products/3760372460068/1.jpg" alt="MATIÈRE PREMIÈRE Encens Suave Eau de Parfum" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">MATIÈRE PREMIÈRE</span>
+          <span class="name">Encens Suave Eau de Parfum</span>
+          <span class="price">50ml €170.00 · 100ml €250.00 — fragrance.mk: 100ml ~€205.37 (12,630 MKD)</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/niche/peripoihsh-somatos/matiere-premiere-hand-and-body-lotion-encens-suave-00003136335/?SizeValue=300ml" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/1/jpg/files/products/3760372460655/01.jpg" alt="MATIÈRE PREMIÈRE Hand &amp; Body Lotion — Encens Suave 300ml" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">MATIÈRE PREMIÈRE</span>
+          <span class="name">Hand &amp; Body Lotion — Encens Suave 300ml</span>
+          <span class="price">300ml €60.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/niche/peripoihsh-somatos/matiere-premiere-hand-and-body-lotion-crystal-saffron-00003136322/?SizeValue=300ml" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/1/jpg/files/products/3760372460150/01.jpg" alt="MATIÈRE PREMIÈRE Hand &amp; Body Lotion — Crystal Saffron 300ml" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">MATIÈRE PREMIÈRE</span>
+          <span class="name">Hand &amp; Body Lotion — Crystal Saffron 300ml</span>
+          <span class="price">300ml €60.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/gunaikeia/eau-de-toilette/diptyque-orph%C3%A9on-eau-de-toilette-00003255896/?SizeValue=100ml" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/1/jpg/files/products/3701699309098/01.jpg" alt="DIPTYQUE Orphéon Eau de Toilette 100ml" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">DIPTYQUE</span>
+          <span class="name">Orphéon Eau de Toilette 100ml</span>
+          <span class="price">100ml €155.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/unisex/eau-de-toilette/diptyque-philosykos-edt-00002464065/?SizeValue=100ml" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/1/png/files/products/3700431421555/10.png" alt="DIPTYQUE Philosykos Eau de Toilette 100ml" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">DIPTYQUE</span>
+          <span class="name">Philosykos Eau de Toilette 100ml</span>
+          <span class="price">100ml €155.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/unisex/eau-de-parfum/diptyque-orpheon-eau-de-parfum-00000085375/?SizeValue=75ml" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/6/jpg/files/products/3700431426321/1.jpg" alt="DIPTYQUE Orphéon Eau de Parfum 75ml" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">DIPTYQUE</span>
+          <span class="name">Orphéon Eau de Parfum 75ml</span>
+          <span class="price">75ml €180.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/unisex/eau-de-parfum/diptyque-philosykos-eau-de-parfum-00002398678/?SizeValue=75ml" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/1/jpg/files/products/3700431425461/01.jpg" alt="DIPTYQUE Philosykos Eau de Parfum 75ml" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">DIPTYQUE</span>
+          <span class="name">Philosykos Eau de Parfum 75ml</span>
+          <span class="price">75ml €180.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/niche/unisex-aromata/maison-crivelli-hibiscus-mahajad-extrait-de-parfum-00003130552/?SizeValue=50ml" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/2/jpg/files/products/3770019756485/1.jpg" alt="MAISON CRIVELLI Hibiscus Mahajad Extrait de Parfum" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">MAISON CRIVELLI</span>
+          <span class="name">Hibiscus Mahajad Extrait de Parfum</span>
+          <span class="price">50ml €200.00 · 100ml €350.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/niche/unisex-aromata/maison-crivelli-safran-secret-extrait-de-parfum-00003130565/?SizeValue=50ml" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/1/jpg/files/products/3760394880264/01.jpg" alt="MAISON CRIVELLI Safran Secret Extrait de Parfum" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">MAISON CRIVELLI</span>
+          <span class="name">Safran Secret Extrait de Parfum</span>
+          <span class="price">50ml €215.00 · 100ml €370.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/unisex/eau-de-parfum/maison-crivelli-tobacco-carnaval-extrait-de-parfum-00003612566/?SizeValue=50ml" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/2/jpg/files/products/3760394881650/1.jpg" alt="MAISON CRIVELLI Tobacco Carnaval Extrait de Parfum" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">MAISON CRIVELLI</span>
+          <span class="name">Tobacco Carnaval Extrait de Parfum</span>
+          <span class="price">50ml €215.00 · 100ml €370.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/niche/unisex-aromata/maison-crivelli-oud-maracuja-extrait-de-parfum-00003130560/?SizeValue=50ml" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/2/jpg/files/products/3770019756362/1.jpg" alt="MAISON CRIVELLI Oud Maracuja Extrait de Parfum" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">MAISON CRIVELLI</span>
+          <span class="name">Oud Maracuja Extrait de Parfum</span>
+          <span class="price">50ml €215.00 · 100ml €370.00 — fragrance.mk: 50ml ~€242.60 (14,920 MKD, out of stock)</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/niche/unisex-aromata/maison-crivelli-oud-stallion-extrait-de-parfum-00003130562/?SizeValue=50ml" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/2/jpg/files/products/3760394880370/1.jpg" alt="MAISON CRIVELLI Oud Stallion Extrait de Parfum" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">MAISON CRIVELLI</span>
+          <span class="name">Oud Stallion Extrait de Parfum</span>
+          <span class="price">50ml €215.00 · 100ml €370.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/niche/unisex-aromata/maison-crivelli-musc-nurasana-extrait-de-parfum-00003431469/?SizeValue=50ml" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/1/jpg/files/products/3760394881667/01.jpg" alt="MAISON CRIVELLI Musc Nurasana Extrait de Parfum" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">MAISON CRIVELLI</span>
+          <span class="name">Musc Nurasana Extrait de Parfum</span>
+          <span class="price">50ml €200.00 · 100ml €350.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/unisex/eau-de-toilette/comme-des-garcons-pocket-play-red-eau-de-toilette-00003230517/?SizeValue=100ml" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/1/jpg/files/products/3488752210019/01.jpg" alt="COMME des GARÇONS Pocket Play Red Eau de Toilette 100ml" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">COMME des GARÇONS</span>
+          <span class="name">Pocket Play Red Eau de Toilette 100ml</span>
+          <span class="price">100ml €110.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/unisex/eau-de-parfum/comme-des-garcons-pocket-blackpepper-eau-de-parfum-00003381777/?SizeValue=100ml" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/2/jpg/files/products/3488750000179/1.jpg" alt="COMME des GARÇONS Pocket Blackpepper Eau de Parfum 100ml" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">COMME des GARÇONS</span>
+          <span class="name">Pocket Blackpepper Eau de Parfum 100ml</span>
+          <span class="price">100ml €130.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.sephora.gr/p/la-nuit-de-l-homme-eau-de-toilette-P80400.html" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://media.sephora.eu/content/dam/gdam/europe/digital/massivpimupload/Y/YVES_SAINT_LAURENT/186318/75184-media_swatch.jpg?scaleWidth=750&amp;scaleHeight=750&amp;scaleMode=fit" alt="YVES SAINT LAURENT La Nuit De L&#x27;Homme Eau de Toilette 60ml" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">YVES SAINT LAURENT</span>
+          <span class="name">La Nuit De L&#x27;Homme Eau de Toilette 60ml</span>
+          <span class="price">60ml €59.75 — fragrance.mk: 60ml ~€75.93 (4,670 MKD)</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.sephora.gr/p/dior-homme-intense-eau-de-parfum-P53514.html" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://media.sephora.eu/content/dam/gdam/europe/digital/pim/published/D/DIOR/163889/35688-media_swatch.jpg?scaleWidth=750&amp;scaleHeight=750&amp;scaleMode=fit" alt="DIOR Dior Homme Intense Eau de Parfum 50ml" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">DIOR</span>
+          <span class="name">Dior Homme Intense Eau de Parfum 50ml</span>
+          <span class="price">50ml €79.04</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.sephora.gr/p/fahrenheit-eau-de-toilette-P3078.html" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://media.sephora.eu/content/dam/gdam/europe/digital/pim/published/D/DIOR/13599/90196-media_swatch.jpg?scaleWidth=750&amp;scaleHeight=750&amp;scaleMode=fit" alt="DIOR Fahrenheit Eau de Toilette" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">DIOR</span>
+          <span class="name">Fahrenheit Eau de Toilette</span>
+          <span class="price">€69.95</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.sephora.gr/p/eau-sauvage-eau-de-toilette-P3074.html" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://media.sephora.eu/content/dam/gdam/europe/digital/pim/published/D/DIOR/119449/51552-media_swatch.jpg?scaleWidth=750&amp;scaleHeight=750&amp;scaleMode=fit" alt="DIOR Eau Sauvage Eau de Toilette" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">DIOR</span>
+          <span class="name">Eau Sauvage Eau de Toilette</span>
+          <span class="price">€69.95</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/unisex/eau-de-parfum/bdk-parfums-gris-charnel-eau-de-parfum-00003253254/?SizeValue=50ml" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/3/jpg/files/products/3760035450184/1.jpg" alt="BDK PARFUMS Gris Charnel Eau de Parfum 50ml" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">BDK PARFUMS</span>
+          <span class="name">Gris Charnel Eau de Parfum 50ml</span>
+          <span class="price">50ml €140.01 — fragrance.mk: 100ml ~€193.01 (11,870 MKD)</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/unisex/eau-de-parfum/bdk-parfums-rouge-smoking-eau-de-parfum-00003253252/?SizeValue=50ml" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/3/jpg/files/products/3760035450221/1.jpg" alt="BDK PARFUMS Rouge Smoking Eau de Parfum 50ml" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">BDK PARFUMS</span>
+          <span class="name">Rouge Smoking Eau de Parfum 50ml</span>
+          <span class="price">50ml €140.01 — fragrance.mk: 100ml ~€175.28 (10,780 MKD)</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/unisex/eau-de-parfum/comme-des-garcons-pocket-comme-des-gar%C3%A7ons-2-eau-de-parfum-00003230139/?SizeValue=100ml" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/2/jpg/files/products/8411061090046/1.jpg" alt="COMME des GARÇONS POCKET Comme des Garçons 2 Eau de Parfum 100ml" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">COMME des GARÇONS POCKET</span>
+          <span class="name">Comme des Garçons 2 Eau de Parfum 100ml</span>
+          <span class="price">100ml €130.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/unisex/eau-de-parfum/comme-des-garcons-pocket-amazingreen-eau-de-parfum-00003564443/?SizeValue=100ml" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/4/jpg/files/products/2601541600018/1.jpg" alt="COMME des GARÇONS POCKET Amazingreen Eau de Parfum 100ml" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">COMME des GARÇONS POCKET</span>
+          <span class="name">Amazingreen Eau de Parfum 100ml</span>
+          <span class="price">100ml €130.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/unisex/eau-de-parfum/comme-des-garcons-pocket-eau-de-parfum-00003230189/?SizeValue=50ml" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/1/jpg/files/products/3488752207286/01.jpg" alt="COMME des GARÇONS POCKET Pocket Eau de Parfum 50ml" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">COMME des GARÇONS POCKET</span>
+          <span class="name">Pocket Eau de Parfum 50ml</span>
+          <span class="price">50ml €100.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.atticadps.gr/proionta-omorfias/arwmata/niche/unisex-aromata/van-cleef-arpels-collection-extraordinaire-patchouli-blanc-eau-de-parfum-00003656382/?SizeValue=75ml" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.atticadps.gr/images/640x360/1/jpg/files/products/3386460126045/01.jpg" alt="VAN CLEEF &amp; ARPELS Collection Extraordinaire Patchouli Blanc Eau de Parfum 75ml" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">VAN CLEEF &amp; ARPELS</span>
+          <span class="name">Collection Extraordinaire Patchouli Blanc Eau de Parfum 75ml</span>
+          <span class="price">75ml €130.00</span>
+        </div>
+      </a>
+      </div>
+    </section>
+    <section class="category" id="sunglasses">
+      <div class="category-head">
+        <h2>Eyewear</h2>
+        <span class="count">23</span>
+      </div>
+      <div class="grid">
+        
+      <a class="card" href="https://www.meandjoe.com/products/jules-burgundy-sunglasses-with-orange-lenses" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="http://www.meandjoe.com/cdn/shop/files/me-and-joe-jules-burgundy-sunglasses-76.jpg?v=1763662340&amp;width=2048" alt="ME &amp; JOE Jules — Burgundy, Orange Lenses" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ME &amp; JOE</span>
+          <span class="name">Jules — Burgundy, Orange Lenses</span>
+          <span class="price">€128.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.meandjoe.com/products/jules-tortoise-sunglasses" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="http://www.meandjoe.com/cdn/shop/files/me-and-joe-jules-tortoise-sunglasses-lifestyle_view.jpg?v=1785227642&amp;width=2048" alt="ME &amp; JOE Jules — Tortoise" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ME &amp; JOE</span>
+          <span class="name">Jules — Tortoise</span>
+          <span class="price">€98.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.meandjoe.com/products/alba-spiced-tortoise-sunglasses" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="http://www.meandjoe.com/cdn/shop/files/me-and-joe-alba-spicedtortoise-sunglasses-37.jpg?v=1763553244&amp;width=2048" alt="ME &amp; JOE Alba — Spiced Tortoise" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ME &amp; JOE</span>
+          <span class="name">Alba — Spiced Tortoise</span>
+          <span class="price">€98.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.meandjoe.com/products/alba-classic-tortoise-sunglasses" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="http://www.meandjoe.com/cdn/shop/files/me-and-joe-alba-tortoise-sunglasses-lifestyle-view.jpg?v=1788636137&amp;width=2048" alt="ME &amp; JOE Alba — Classic Tortoise" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ME &amp; JOE</span>
+          <span class="name">Alba — Classic Tortoise</span>
+          <span class="price">€98.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.meandjoe.com/products/alba-black-sunglasses-with-orange-lenses" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="http://www.meandjoe.com/cdn/shop/files/me-and-joe-alba-black-sunglasses-31.jpg?v=1763651458&amp;width=2048" alt="ME &amp; JOE Alba — Black, Orange Lenses" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ME &amp; JOE</span>
+          <span class="name">Alba — Black, Orange Lenses</span>
+          <span class="price">€128.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.meandjoe.com/products/alba-black-sunglasses-with-light-blue-lenses" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="http://www.meandjoe.com/cdn/shop/files/me-and-joe-alba-black-sunglasses-34.jpg?v=1763651458&amp;width=2048" alt="ME &amp; JOE Alba — Black, Light Blue Lenses" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ME &amp; JOE</span>
+          <span class="name">Alba — Black, Light Blue Lenses</span>
+          <span class="price">€128.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.meandjoe.com/products/darya-black-sunglasses-with-light-blue-lenses" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="http://www.meandjoe.com/cdn/shop/files/me-and-joe-darya-black-sunglasses-blue-lenses.02.png?v=1791807128&amp;width=2048" alt="ME &amp; JOE Darya — Black, Light Blue Lenses" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ME &amp; JOE</span>
+          <span class="name">Darya — Black, Light Blue Lenses</span>
+          <span class="price">€128.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.meandjoe.com/products/drake-tortoise-light-blue-lenses" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.meandjoe.com/cdn/shop/files/SUNGLASSES-WOMEN-MEN-UNISEX-DRAKE-TORTOISE-CUSTOMLENSES-BLUEJEAN-FRONT.jpg?v=1753487028&amp;width=2048" alt="ME &amp; JOE Drake — Tortoise, Light Blue Lenses" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ME &amp; JOE</span>
+          <span class="name">Drake — Tortoise, Light Blue Lenses</span>
+          <span class="price">€128.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.meandjoe.com/products/drake-burgundy-sunglasses-with-ight-blue-lenses" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="http://www.meandjoe.com/cdn/shop/files/SUNGLASSES-WOMEN-MEN-UNISEX-DRAKE-RED-CUSTOMLENSES-BLUEJEAN-FRONT.jpg?v=1738595013&amp;width=2048" alt="ME &amp; JOE Drake — Burgundy, Light Blue Lenses" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ME &amp; JOE</span>
+          <span class="name">Drake — Burgundy, Light Blue Lenses</span>
+          <span class="price">€128.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.meandjoe.com/products/luka-gold-with-light-blue-lenses" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.meandjoe.com/cdn/shop/files/me-and-joe-luka-gold-blue-lenses-sunglasses01.jpg?v=1786625925&amp;width=2048" alt="ME &amp; JOE Luka — Gold, Light Blue Lenses" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ME &amp; JOE</span>
+          <span class="name">Luka — Gold, Light Blue Lenses</span>
+          <span class="price">€128.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.meandjoe.com/products/luka-silver-sunglasses" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.meandjoe.com/cdn/shop/files/me-and-joe-luka-silver-sunglasses01.jpg?v=1786620112&amp;width=2048" alt="ME &amp; JOE Luka — Silver" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ME &amp; JOE</span>
+          <span class="name">Luka — Silver</span>
+          <span class="price">€98.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.meandjoe.com/products/leone-tortoise-sunglasses-with-blue-lenses" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="http://www.meandjoe.com/cdn/shop/files/me-and-joe-leone-tortoise-blue-lenses-sunglasses-02_667e6fe1-876e-40b6-a033-9619eea34e8c.jpg?v=1784536433&amp;width=2048" alt="ME &amp; JOE Leone — Tortoise, Blue Lenses" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ME &amp; JOE</span>
+          <span class="name">Leone — Tortoise, Blue Lenses</span>
+          <span class="price">€158.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.meandjoe.com/products/leone-crystal-olive-sunglasses" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="http://www.meandjoe.com/cdn/shop/products/SUNGLASSES-WOMEN-MEN-UNISEX-LEONE-OLIVE-FRONT.jpg?v=1654513311&amp;width=2048" alt="ME &amp; JOE Leone — Crystal Olive" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ME &amp; JOE</span>
+          <span class="name">Leone — Crystal Olive</span>
+          <span class="price">€128.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.meandjoe.com/products/bowie-tortoise-sunglasses-blue-lenses" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="http://www.meandjoe.com/cdn/shop/files/me-and-joe-bowie-tortoise-sunglasses-blue-lenses.jpg?v=1787489975&amp;width=2048" alt="ME &amp; JOE Bowie — Tortoise, Blue Lenses" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ME &amp; JOE</span>
+          <span class="name">Bowie — Tortoise, Blue Lenses</span>
+          <span class="price">€128.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.meandjoe.com/products/bowie-tortoise-sunglasses" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.meandjoe.com/cdn/shop/files/me-and-joe-bowie-tortoise-sunglasses.jpg?v=1787490848&amp;width=2048" alt="ME &amp; JOE Bowie — Tortoise" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ME &amp; JOE</span>
+          <span class="name">Bowie — Tortoise</span>
+          <span class="price">€98.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.meandjoe.com/products/kubik-black-sunglasses-with-gray-gradient-lenses" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.meandjoe.com/cdn/shop/files/2026_05_15-Me-_-Joe-Product-0052.jpg?v=1779456376&amp;width=2048" alt="ME &amp; JOE Kubik — Black, Grey Gradient Lenses" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ME &amp; JOE</span>
+          <span class="name">Kubik — Black, Grey Gradient Lenses</span>
+          <span class="price">€158.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.meandjoe.com/products/taylor-stripe-tortoise-sunglasses-with-light-blue-lenes" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.meandjoe.com/cdn/shop/files/SUNGLASSES-WOMEN-MEN-UNISEX-TAYLOR-BLONDETORTOISE-CUSTOMLENSES-BLUEJEAN-FRONT.jpg?v=1756932721&amp;width=2048" alt="ME &amp; JOE Taylor — Stripe Tortoise, Light Blue Lenses" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ME &amp; JOE</span>
+          <span class="name">Taylor — Stripe Tortoise, Light Blue Lenses</span>
+          <span class="price">€128.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.meandjoe.com/products/taylor-black-sunglasses-with-light-blue-lenses" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="http://www.meandjoe.com/cdn/shop/files/SUNGLASSES-WOMEN-MEN-UNISEX-TAYLOR-BLACK-CUSTOMLENSES-BLUEJEAN-FRONT.jpg?v=1756932721&amp;width=2048" alt="ME &amp; JOE Taylor — Black, Light Blue Lenses" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ME &amp; JOE</span>
+          <span class="name">Taylor — Black, Light Blue Lenses</span>
+          <span class="price">€128.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.meandjoe.com/products/taylor-black-sunglasses-with-yellow-lenses" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="http://www.meandjoe.com/cdn/shop/files/SUNGLASSES-MEN-UNISEX-TAYLOR-MODEL-BLACK-CUSTOM-PINACOLADALENSES-SIDE.jpg?v=1763663759&amp;width=2048" alt="ME &amp; JOE Taylor — Black, Yellow Lenses" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ME &amp; JOE</span>
+          <span class="name">Taylor — Black, Yellow Lenses</span>
+          <span class="price">€128.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.meandjoe.com/products/luka-gold-with-light-blue-lenses" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.meandjoe.com/cdn/shop/files/me-and-joe-luka-gold-blue-lenses-sunglasses01.jpg?v=1786625925&amp;width=2048" alt="ME &amp; JOE Luka Colored Lenses — Gold, Light Blue Lenses" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ME &amp; JOE</span>
+          <span class="name">Luka Colored Lenses — Gold, Light Blue Lenses</span>
+          <span class="price">€128.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.meandjoe.com/products/kubik-cherry-tortoise-sunglasses" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.meandjoe.com/cdn/shop/files/2026_05_15-Me-_-Joe-Product-0055.jpg?v=1779454351&amp;width=2048" alt="ME &amp; JOE Kubik — Cherry Tortoise" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ME &amp; JOE</span>
+          <span class="name">Kubik — Cherry Tortoise</span>
+          <span class="price">€128.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.meandjoe.com/products/elvie-gold-sunglasses" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.meandjoe.com/cdn/shop/files/me-and-joe-elvie-gold-sunglasses-02.jpg?v=1784277115&amp;width=2048" alt="ME &amp; JOE Elvie — Gold" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ME &amp; JOE</span>
+          <span class="name">Elvie — Gold</span>
+          <span class="price">€98.00</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.meandjoe.com/products/kubik-black-sunglasses-with-gray-gradient-lenses" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://www.meandjoe.com/cdn/shop/files/2026_05_15-Me-_-Joe-Product-0052.jpg?v=1779456376&amp;width=2048" alt="ME &amp; JOE Kubik Colored Lenses — Black, Gray Gradient Lenses" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ME &amp; JOE</span>
+          <span class="name">Kubik Colored Lenses — Black, Gray Gradient Lenses</span>
+          <span class="price">€158.00</span>
+        </div>
+      </a>
+      </div>
+    </section>
+    <section class="category" id="zara">
+      <div class="category-head">
+        <h2>Zara</h2>
+        <span class="count">09</span>
+      </div>
+      <div class="grid">
+        
+      <a class="card" href="https://www.zara.com/gr/en/embossed-leather-card-holder-p13806920.html?v1=600473899&amp;v2=2436449" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://static.zara.net/assets/public/6d6e/e466/0d654ed5b205/3eaade33723d/13806920800-e1/13806920800-e1.jpg?ts=1793270262767&amp;w=560" alt="ZARA Embossed Leather Card Holder" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ZARA</span>
+          <span class="name">Embossed Leather Card Holder</span>
+          <span class="price">€25.95</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.zara.com/gr/en/padded-lyocell-cotton-jacket-p01437512.html?v1=553363803&amp;v2=2536906" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://static.zara.net/assets/public/2349/c4bb/4921474f8659/05a0296c4dc3/01437512401-p/01437512401-p.jpg?ts=1792069774177&amp;w=560" alt="ZARA Padded Lyocell and Cotton Jacket" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ZARA</span>
+          <span class="name">Padded Lyocell and Cotton Jacket</span>
+          <span class="price">€59.95</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.zara.com/gr/en/velvet-zip-up-jacket-p05854123.html?v1=567348977&amp;v2=2536906" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://static.zara.net/assets/public/ff6c/b23d/9f234ae6a580/886e97eb6152/05854123684-p/05854123684-p.jpg?ts=1792742686681&amp;w=560" alt="ZARA Velvet Zip-Up Jacket" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ZARA</span>
+          <span class="name">Velvet Zip-Up Jacket</span>
+          <span class="price">€69.95</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.zara.com/gr/en/solar-bossa-parfum-100-ml---3-38-fl--oz-p20210913.html?v1=560643495&amp;v2=2436468" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://static.zara.net/assets/public/cbe3/dbd6/690a4941ae77/39adf12c0a51/20210913999-e1/20210913999-e1.jpg?ts=1787917948323&amp;w=560" alt="ZARA Solar Bossa Parfum 100ml" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ZARA</span>
+          <span class="name">Solar Bossa Parfum 100ml</span>
+          <span class="price">100ml €25.95</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.zara.com/gr/en/velvet-tempo-edp-100-ml--3-38-fl--oz--p20210911.html?v1=560637357&amp;v2=2436468" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://static.zara.net/assets/public/5f03/26e6/9040472cae9c/875302937f11/20210911999-e1/20210911999-e1.jpg?ts=1787917945410&amp;w=560" alt="ZARA Velvet Tempo EDP 100ml" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ZARA</span>
+          <span class="name">Velvet Tempo EDP 100ml</span>
+          <span class="price">100ml €25.95</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.zara.com/gr/en/smoked-reverb-edp-100ml--3-38-fl--oz--p20210910.html?v1=560635485&amp;v2=2436468" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://static.zara.net/assets/public/a2ec/1dbe/36194cb7ac73/795baef39d71/20210910999-e1/20210910999-e1.jpg?ts=1787917946378&amp;w=560" alt="ZARA Smoked Reverb EDP 100ml" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ZARA</span>
+          <span class="name">Smoked Reverb EDP 100ml</span>
+          <span class="price">100ml €25.95</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.zara.com/gr/en/tobacco-temptation-edp-100-ml--3-38-fl--oz--p20220387.html?v1=564895629&amp;v2=2436468" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://static.zara.net/assets/public/953a/2322/724142b3a4e4/398877a9550a/20220387999-e1/20220387999-e1.jpg?ts=1790064741709&amp;w=560" alt="ZARA Tobacco Temptation EDP 100ml" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ZARA</span>
+          <span class="name">Tobacco Temptation EDP 100ml</span>
+          <span class="price">100ml €19.95</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.zara.com/gr/en/sole-di-bergamotto-edp-100-ml--3-38-fl--oz--p20213023.html?v1=545465855&amp;v2=2436468" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://static.zara.net/assets/public/db91/3111/660a4859bd36/eb6181ed601a/20213023999-e1/20213023999-e1.jpg?ts=1784215040852&amp;w=560" alt="ZARA Sole di Bergamotto EDP 100ml" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ZARA</span>
+          <span class="name">Sole di Bergamotto EDP 100ml</span>
+          <span class="price">100ml €22.95</span>
+        </div>
+      </a>
+
+      <a class="card" href="https://www.zara.com/gr/en/vento-di-vetiver-edp-100ml--3-38-fl--oz--p20213025.html?v1=545465978&amp;v2=2436468" target="_blank" rel="noopener">
+        <div class="card-img">
+          <img src="https://static.zara.net/assets/public/3b23/2e15/c0494c4780f0/dcb9dfcdc927/20213025999-e1/20213025999-e1.jpg?ts=1784215041745&amp;w=560" alt="ZARA Vento di Vetiver EDP 100ml" loading="lazy" onerror="this.closest('.card').classList.add('img-fail')">
+          <span class="view-tag">View item ↗</span>
+        </div>
+        <div class="card-meta">
+          <span class="brand">ZARA</span>
+          <span class="name">Vento di Vetiver EDP 100ml</span>
+          <span class="price">100ml €22.95</span>
+        </div>
+      </a>
+      </div>
+    </section>
+  
+</main>
+
+<footer>Curated from Chrome bookmarks — images pulled from the original product pages</footer>
+
+</body>
+</html>
